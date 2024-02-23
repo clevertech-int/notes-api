@@ -6,14 +6,23 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 export class NotesService {
   create(createNoteDto: CreateNoteDto) {
     console.log('createNoteDto: ', createNoteDto.blocks);
-    return 'This action adds a new note';
+    return createNoteDto;
   }
 
   findAll() {
-    return `This action returns all notes`;
+    return [
+      {
+        id: '1',
+        title: 'First Note',
+      },
+      {
+        id: '2',
+        title: 'Second Note',
+      },
+    ];
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} note`;
   }
 

@@ -31,11 +31,11 @@ export class NotesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('createNote')
   create(@MessageBody() createNoteDto: CreateNoteDto) {
-    // await this.notesService.create(createNoteDto);
-    console.log('Here ...');
+    const note = this.notesService.create(createNoteDto);
     // emit back to the origin
     //client.emit('noteCreated', createNoteDto);
-    this.server.emit('noteCreated', createNoteDto);
+    this.server.emit('noteCreated', note);
+    this.server.emit('findAllNotes', ['hello']);
   }
 
   @SubscribeMessage('findAllNotes')
@@ -44,7 +44,8 @@ export class NotesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('findOneNote')
-  findOne(@MessageBody() id: number) {
+  findOne(@MessageBody() id: string) {
+    console.log(id);
     return this.notesService.findOne(id);
   }
 
