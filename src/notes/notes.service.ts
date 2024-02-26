@@ -62,8 +62,29 @@ export class NotesService implements OnModuleInit {
     ];
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} note`;
+  async findOne(id: string) {
+    const blocks = await this.noteBlocksRepository
+      .search()
+      .where('noteId')
+      .equals(id)
+      .return.all();
+
+    const formattedBlocks = blocks.map((block) => {
+      return {
+        id: block.id,
+        type: 'paragraph',
+        data: {
+          text: block.body,
+        },
+      };
+    });
+
+    return {
+      noteId: id,
+      time: 1708948242966,
+      blocks: formattedBlocks,
+      version: '2.29.0',
+    };
   }
 
   update(id: number, updateNoteDto: UpdateNoteDto) {

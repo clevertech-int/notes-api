@@ -31,9 +31,9 @@ export class NotesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('createNote')
   async create(@MessageBody() createNoteDto: CreateNoteDto) {
+    console.log(JSON.stringify(createNoteDto, null, 2));
     const note = await this.notesService.create(createNoteDto);
     this.server.emit('noteCreated', note);
-    // this.server.emit('findAllNotes', ['hello']);
   }
 
   @SubscribeMessage('findAllNotes')
@@ -43,7 +43,6 @@ export class NotesGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('findOneNote')
   findOne(@MessageBody() id: string) {
-    console.log(id);
     return this.notesService.findOne(id);
   }
 

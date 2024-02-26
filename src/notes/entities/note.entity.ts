@@ -8,5 +8,6 @@ export const NoteSchema = new Schema('Note', {
 export const NoteBlockSchema = new Schema('NoteBlock', {
   id: { type: 'string' },
   noteId: { type: 'string' },
+  type: { type: 'string' },
   body: { type: 'text' },
 });
