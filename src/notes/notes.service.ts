@@ -50,24 +50,39 @@ export class NotesService implements OnModuleInit {
   }
 
   findAll() {
-    return [
-      {
-        id: '1',
-        title: 'First Note',
-      },
-      {
-        id: '2',
-        title: 'Second Note',
-      },
-    ];
+    return this.notesReposiotry.search().return.all();
   }
 
   async findOne(id: string) {
+    // check if exists first
+    let note = await this.notesReposiotry
+      .search()
+      .where('id')
+      .equals(id)
+      .return.first();
+
+    if (!note) {
+      note = await this.notesReposiotry.save({
+        id,
+        title: id,
+        author: 'anonymous',
+      });
+    }
+
     const blocks = await this.noteBlocksRepository
       .search()
       .where('noteId')
       .equals(id)
       .return.all();
+
+    if (blocks.length === 0) {
+      return {
+        noteId: id,
+        time: 1708948242966,
+        blocks: [],
+        version: '2.29.0',
+      };
+    }
 
     const formattedBlocks = blocks.map((block) => {
       return {

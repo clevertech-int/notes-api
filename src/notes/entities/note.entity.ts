@@ -2,6 +2,8 @@ import { Schema } from 'redis-om';
 
 export const NoteSchema = new Schema('Note', {
   id: { type: 'string' },
+  title: { type: 'string' },
+  author: { type: 'string' },
   // we might want to persis the order of blocks in here as well ..
 });
 
