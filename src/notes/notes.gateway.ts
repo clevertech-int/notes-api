@@ -30,12 +30,10 @@ export class NotesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('createNote')
-  create(@MessageBody() createNoteDto: CreateNoteDto) {
-    const note = this.notesService.create(createNoteDto);
-    // emit back to the origin
-    //client.emit('noteCreated', createNoteDto);
+  async create(@MessageBody() createNoteDto: CreateNoteDto) {
+    const note = await this.notesService.create(createNoteDto);
     this.server.emit('noteCreated', note);
-    this.server.emit('findAllNotes', ['hello']);
+    // this.server.emit('findAllNotes', ['hello']);
   }
 
   @SubscribeMessage('findAllNotes')

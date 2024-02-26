@@ -2,10 +2,14 @@ import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { RedisClientService } from '../redis-client/redis-client.service';
-import { NoteSchema } from './entities/note.entity';
+import { NoteBlockSchema, NoteSchema } from './entities/note.entity';
+import { Repository } from 'redis-om';
 
 @Injectable()
-export class NotesService {
+export class NotesService implements OnModuleInit {
+  private notesReposiotry: Repository;
+  private noteBlocksRepository: Repository;
+
   constructor(
     @Inject(RedisClientService)
     private readonly redisClient: RedisClientService,
@@ -13,12 +17,35 @@ export class NotesService {
 
   async onModuleInit() {
     await this.redisClient.open();
-    const repo = await this.redisClient.fetchRepository(NoteSchema);
-    await repo.createIndex();
+    this.notesReposiotry = await this.redisClient.fetchRepository(NoteSchema);
+    this.noteBlocksRepository = await this.redisClient.fetchRepository(
+      NoteBlockSchema,
+    );
+    await this.notesReposiotry.createIndex();
+    await this.noteBlocksRepository.createIndex();
   }
 
-  create(createNoteDto: CreateNoteDto) {
-    console.log('createNoteDto: ', createNoteDto.blocks);
+  async create(createNoteDto: CreateNoteDto) {
+    const { noteId } = createNoteDto;
+    for (const block of createNoteDto.blocks) {
+      const { id } = block;
+      const hit = await this.noteBlocksRepository
+        .search()
+        .where('id')
+        .equals(id)
+        .return.first();
+
+      if (hit) {
+        hit.body = block.data.text;
+        await this.noteBlocksRepository.save(hit);
+      } else {
+        await this.noteBlocksRepository.save({
+          noteId,
+          id: block.id,
+          body: block.data.text,
+        });
+      }
+    }
     return createNoteDto;
   }
 

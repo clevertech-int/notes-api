@@ -1,4 +1,5 @@
 type EditorBlock = {
+  id: string;
   type: string;
   data: {
     text: string;
@@ -6,5 +7,6 @@ type EditorBlock = {
 };
 
 export class CreateNoteDto {
+  noteId: string;
   blocks: EditorBlock[];
 }
