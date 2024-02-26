@@ -1,9 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { RedisClientService } from '../redis-client/redis-client.service';
+import { NoteSchema } from './entities/note.entity';
 
 @Injectable()
 export class NotesService {
+  constructor(
+    @Inject(RedisClientService)
+    private readonly redisClient: RedisClientService,
+  ) {}
+
+  async onModuleInit() {
+    await this.redisClient.open();
+    const repo = await this.redisClient.fetchRepository(NoteSchema);
+    await repo.createIndex();
+  }
+
   create(createNoteDto: CreateNoteDto) {
     console.log('createNoteDto: ', createNoteDto.blocks);
     return createNoteDto;
