@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { validationSchema } from './config/validation.schema';
 import { config } from './config';
 import { RedisClientModule } from './redis-client/redis-client.module';
+import { TagsModule } from './tags/tags.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RedisClientModule } from './redis-client/redis-client.module';
       validationSchema,
       load: [config],
     }),
+    TagsModule,
   ],
 })
 export class AppModule {}
