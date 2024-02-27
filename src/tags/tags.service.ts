@@ -3,6 +3,7 @@ import { CreateTagDto } from './dto/create-tag.dto';
 import { RedisClientService } from '../redis-client/redis-client.service';
 import { Repository } from 'redis-om';
 import { TagSchema } from './entities/tag.entity';
+import { uuid } from 'uuidv4';
 
 @Injectable()
 export class TagsService implements OnModuleInit {
@@ -19,11 +20,14 @@ export class TagsService implements OnModuleInit {
     await this.tagsReposiotry.createIndex();
   }
 
-  create(createTagDto: CreateTagDto) {
-    return this.tagsReposiotry.save({ name: createTagDto.name });
+  async create(createTagDto: CreateTagDto): Promise<any> {
+    return this.tagsReposiotry.save({
+      uuid: uuid(),
+      name: createTagDto.name,
+    });
   }
 
-  findAll() {
+  async findAll() {
     return this.tagsReposiotry.search().return.all();
   }
 }
