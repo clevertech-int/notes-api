@@ -40,6 +40,11 @@ export class NotesGateway implements OnGatewayConnection, OnGatewayDisconnect {
     return this.notesService.findAll();
   }
 
+  @SubscribeMessage('searchNoteBlocks')
+  searchNoteBlocks(@MessageBody() dto: { uuid: string }) {
+    return this.notesService.search(dto.uuid);
+  }
+
   @SubscribeMessage('findOneNote')
   findOne(@MessageBody() id: string) {
     return this.notesService.findOne(id);

@@ -53,6 +53,14 @@ export class NotesService implements OnModuleInit {
     return this.notesReposiotry.search().return.all();
   }
 
+  search(uuid: string) {
+    return this.noteBlocksRepository
+      .search()
+      .where('body')
+      .matches(uuid)
+      .return.all();
+  }
+
   async findOne(id: string) {
     // check if exists first
     let note = await this.notesReposiotry

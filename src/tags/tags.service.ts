@@ -22,7 +22,7 @@ export class TagsService implements OnModuleInit {
 
   async create(createTagDto: CreateTagDto): Promise<any> {
     return this.tagsReposiotry.save({
-      uuid: uuid(),
+      uuid: uuid().replace(/-/g, ''),
       name: createTagDto.name,
     });
   }
