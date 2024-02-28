@@ -1,4 +1,4 @@
-type EditorBlock = {
+export type EditorBlock = {
   id: string;
   type: string;
   data: {

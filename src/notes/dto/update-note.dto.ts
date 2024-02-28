@@ -1,6 +1,6 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateNoteDto } from './create-note.dto';
+import { EditorBlock } from './create-note.dto';
 
-export class UpdateNoteDto extends PartialType(CreateNoteDto) {
-  id: number;
+export class UpdateNoteDto {
+  noteId: string;
+  blocks: EditorBlock[];
 }

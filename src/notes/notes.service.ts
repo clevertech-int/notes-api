@@ -4,6 +4,7 @@ import { UpdateNoteDto } from './dto/update-note.dto';
 import { RedisClientService } from '../redis-client/redis-client.service';
 import { NoteBlockSchema, NoteSchema } from './entities/note.entity';
 import { Repository } from 'redis-om';
+import ShortUniqueId from 'short-unique-id';
 
 @Injectable()
 export class NotesService implements OnModuleInit {
@@ -26,27 +27,15 @@ export class NotesService implements OnModuleInit {
   }
 
   async create(createNoteDto: CreateNoteDto) {
-    const { noteId } = createNoteDto;
-    for (const block of createNoteDto.blocks) {
-      const { id } = block;
-      const hit = await this.noteBlocksRepository
-        .search()
-        .where('id')
-        .equals(id)
-        .return.first();
+    const { randomUUID } = new ShortUniqueId({ length: 10 });
+    const id = randomUUID();
+    const note = await this.notesReposiotry.save({
+      id,
+      title: id,
+      author: 'anonymous',
+    });
 
-      if (hit) {
-        hit.body = block.data.text;
-        await this.noteBlocksRepository.save(hit);
-      } else {
-        await this.noteBlocksRepository.save({
-          noteId,
-          id: block.id,
-          body: block.data.text,
-        });
-      }
-    }
-    return createNoteDto;
+    return note;
   }
 
   findAll() {
@@ -62,21 +51,6 @@ export class NotesService implements OnModuleInit {
   }
 
   async findOne(id: string) {
-    // check if exists first
-    let note = await this.notesReposiotry
-      .search()
-      .where('id')
-      .equals(id)
-      .return.first();
-
-    if (!note) {
-      note = await this.notesReposiotry.save({
-        id,
-        title: id,
-        author: 'anonymous',
-      });
-    }
-
     const blocks = await this.noteBlocksRepository
       .search()
       .where('noteId')
@@ -110,8 +84,27 @@ export class NotesService implements OnModuleInit {
     };
   }
 
-  update(id: number, updateNoteDto: UpdateNoteDto) {
-    return `This action updates a #${id} note`;
+  async update(noteId: string, updateNoteDto: UpdateNoteDto) {
+    for (const block of updateNoteDto.blocks) {
+      const { id } = block;
+      const hit = await this.noteBlocksRepository
+        .search()
+        .where('id')
+        .equals(id)
+        .return.first();
+
+      if (hit) {
+        hit.body = block.data.text;
+        await this.noteBlocksRepository.save(hit);
+      } else {
+        await this.noteBlocksRepository.save({
+          id,
+          noteId,
+          body: block.data.text,
+        });
+      }
+    }
+    return updateNoteDto;
   }
 
   remove(id: number) {

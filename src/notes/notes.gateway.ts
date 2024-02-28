@@ -51,8 +51,12 @@ export class NotesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('updateNote')
-  update(@MessageBody() updateNoteDto: UpdateNoteDto) {
-    return this.notesService.update(updateNoteDto.id, updateNoteDto);
+  async update(@MessageBody() updateNoteDto: UpdateNoteDto) {
+    const note = await this.notesService.update(
+      updateNoteDto.noteId,
+      updateNoteDto,
+    );
+    this.server.emit('noteUpdated', note);
   }
 
   @SubscribeMessage('removeNote')
