@@ -8,7 +8,7 @@ const httpsOptions = {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { httpsOptions });
-  await app.listen(8081);
+  await app.listen(8080);
 
   console.log(`Running on port: ${await app.getUrl()}`);
 }
